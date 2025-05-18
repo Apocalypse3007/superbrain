@@ -119,7 +119,17 @@ app.post("/content", middleware, async (req:Request, res:Response): Promise<any>
   }
 })
 
+app.get("/content", middleware, async (req:Request, res:Response): Promise<any> => {
+  const userId = req.userId;
 
+  const content = await Contentmodel.find({
+    userId: userId 
+  }).populate("userId","email");
+
+  return res.json({
+    content
+  })
+})
 
 
 

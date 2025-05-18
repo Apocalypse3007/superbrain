@@ -11,11 +11,8 @@ export const middleware = (req: Request, res: Response, next: NextFunction): voi
     }
 
     try {
-        const decoded = jwt.verify(token, JWT_SECRET) as { id: string };
-
-        // @ts-ignore
-        req.userId = decoded.id;
-
+        const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
+        req.userId = decoded.userId;
         next();
     } catch (err) {
         res.status(403).json({ message: "Unauthorized" });

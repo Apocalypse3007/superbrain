@@ -15,8 +15,7 @@ const middleware = (req, res, next) => {
     }
     try {
         const decoded = jsonwebtoken_1.default.verify(token, config_1.JWT_SECRET);
-        // @ts-ignore
-        req.userId = decoded.id;
+        req.userId = decoded.userId;
         next();
     }
     catch (err) {

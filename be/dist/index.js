@@ -125,6 +125,15 @@ app.post("/content", middleware_1.middleware, (req, res) => __awaiter(void 0, vo
         });
     }
 }));
+app.get("/content", middleware_1.middleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.userId;
+    const content = yield db_1.Contentmodel.find({
+        userId: userId
+    }).populate("userId", "email");
+    return res.json({
+        content
+    });
+}));
 app.listen(3000, () => {
     console.log("Server is running on port 3000");
 });

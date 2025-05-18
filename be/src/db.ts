@@ -29,16 +29,15 @@ const ContentSchema = new Schema({
     },
     link: {
         type: String,
-        required: true,
     },
     tags: [{
         tags: [{ type: mongoose.Types.ObjectId, ref: "tag" }],
     }],
-    userId: [{ 
+    userId: { 
         type: mongoose.Types.ObjectId, 
         ref: "User", 
         required: true                      
-    }],
+    },
 })
 export const Contentmodel = model("Content", ContentSchema);
 
