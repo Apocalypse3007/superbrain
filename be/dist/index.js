@@ -102,7 +102,10 @@ app.post("/content", middleware_1.middleware, (req, res) => __awaiter(void 0, vo
         };
         if (parsedData.data.tags && parsedData.data.tags.length > 0) {
             const tagPromises = parsedData.data.tags.map((tagTitle) => __awaiter(void 0, void 0, void 0, function* () {
-                const tag = yield db_1.Tagmodel.create({ title: tagTitle });
+                let tag = yield db_1.Tagmodel.findOne({ title: tagTitle });
+                if (!tag) {
+                    tag = yield db_1.Tagmodel.create({ title: tagTitle });
+                }
                 return tag._id;
             }));
             const tagIds = yield Promise.all(tagPromises);

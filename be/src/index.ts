@@ -94,7 +94,10 @@ app.post("/content", middleware, async (req:Request, res:Response): Promise<any>
 
     if (parsedData.data.tags && parsedData.data.tags.length > 0) {
       const tagPromises = parsedData.data.tags.map(async (tagTitle: string) => {
-        const tag = await Tagmodel.create({ title: tagTitle });
+        let tag = await Tagmodel.findOne({ title: tagTitle });
+        if (!tag) {
+          tag = await Tagmodel.create({ title: tagTitle });
+        }
         return tag._id;
       });
       const tagIds = await Promise.all(tagPromises);
