@@ -6,6 +6,8 @@ import cors from "cors";
 import bcrypt from "bcrypt";
 import { SignupSchema,SigninSchema,ContentSchema } from "./types";
 import jwt from "jsonwebtoken";
+import { randomBytes } from "crypto";
+
 const app = express();
 app.use(cors())
 app.use(express.json())
@@ -76,7 +78,6 @@ app.post("/signin", async (req:Request, res:Response): Promise<any> => {
   }
 })
 
-
 app.post("/content", middleware, async (req:Request, res:Response): Promise<any> => {
   const parsedData = ContentSchema.safeParse(req.body);
   if(!parsedData.success){
@@ -131,9 +132,82 @@ app.get("/content", middleware, async (req:Request, res:Response): Promise<any> 
   })
 })
 
+app.delete("/content", middleware, async (req:Request, res:Response): Promise<any> => {
+  const contentId = req.body.contentId;
 
+  const content = await Contentmodel.findOne({
+    _id: contentId
+  })
+  if(!content){
+    return res.json({
+      error: "Content not found"
+    })
+  }
+  await Contentmodel.deleteOne({
+    _id: contentId,
+    userId: req.userId
+  })
+  return res.json({
+    message: "Content deleted"
+  })
+})
 
+app.post("/brain/share", middleware, async (req:Request, res:Response): Promise<any> => {
+  const {share} = req.body;
+  if(share){
+    const existingLink = await Linkmodel.findOne({
+      userId: req.userId  
+    })
+    if(existingLink){
+      return res.json({
+        link: existingLink.hash
+      })
+    }
+    const hash = randomBytes(10).toString("hex");
+    const newLink = await Linkmodel.create({
+      hash,
+      userId: req.userId
+    })
+    return res.json({
+    link: newLink.hash
+  })
+  } else {
+    await Linkmodel.deleteOne({
+      userId: req.userId
+    })
+    return res.json({
+      message: "Link deleted"
+    })
+  }
+})
 
+app.get("/brain/:shareLink", async (req:Request, res:Response): Promise<any> => {
+  const hash = req.params.shareLink;
+  const link = await Linkmodel.findOne({
+    hash
+  })
+  if(!link){
+    return res.status(411).json({
+      error: "Link not found"
+    })
+  }
+  const content = await Contentmodel.find({
+    userId: link.userId
+  })
+  const user = await Usermodel.findOne({
+    _id: link.userId
+  })
+  
+  if(!user){
+    return res.status(411).json({
+      error: "User not found"
+    })
+  }
+    res.json({
+    username: user.name,
+    content
+  })
+})
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");

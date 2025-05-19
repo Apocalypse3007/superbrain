@@ -20,6 +20,7 @@ const cors_1 = __importDefault(require("cors"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const types_1 = require("./types");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const crypto_1 = require("crypto");
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
@@ -131,6 +132,79 @@ app.get("/content", middleware_1.middleware, (req, res) => __awaiter(void 0, voi
         userId: userId
     }).populate("userId", "email");
     return res.json({
+        content
+    });
+}));
+app.delete("/content", middleware_1.middleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const contentId = req.body.contentId;
+    const content = yield db_1.Contentmodel.findOne({
+        _id: contentId
+    });
+    if (!content) {
+        return res.json({
+            error: "Content not found"
+        });
+    }
+    yield db_1.Contentmodel.deleteOne({
+        _id: contentId,
+        userId: req.userId
+    });
+    return res.json({
+        message: "Content deleted"
+    });
+}));
+app.post("/brain/share", middleware_1.middleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { share } = req.body;
+    if (share) {
+        const existingLink = yield db_1.Linkmodel.findOne({
+            userId: req.userId
+        });
+        if (existingLink) {
+            return res.json({
+                link: existingLink.hash
+            });
+        }
+        const hash = (0, crypto_1.randomBytes)(10).toString("hex");
+        const newLink = yield db_1.Linkmodel.create({
+            hash,
+            userId: req.userId
+        });
+        return res.json({
+            link: newLink.hash
+        });
+    }
+    else {
+        yield db_1.Linkmodel.deleteOne({
+            userId: req.userId
+        });
+        return res.json({
+            message: "Link deleted"
+        });
+    }
+}));
+app.get("/brain/:shareLink", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const hash = req.params.shareLink;
+    const link = yield db_1.Linkmodel.findOne({
+        hash
+    });
+    if (!link) {
+        return res.status(411).json({
+            error: "Link not found"
+        });
+    }
+    const content = yield db_1.Contentmodel.find({
+        userId: link.userId
+    });
+    const user = yield db_1.Usermodel.findOne({
+        _id: link.userId
+    });
+    if (!user) {
+        return res.status(411).json({
+            error: "User not found"
+        });
+    }
+    res.json({
+        username: user.name,
         content
     });
 }));

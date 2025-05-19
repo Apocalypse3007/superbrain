@@ -1,6 +1,6 @@
 import mongoose, { model, Schema } from "mongoose";
-
 mongoose.connect("mongodb://localhost:27017/brain");
+
 
 const UserSchema = new Schema({
     name: {
@@ -18,7 +18,6 @@ const UserSchema = new Schema({
     }
 })
 export const Usermodel = model("User", UserSchema);
-
 
 
 
@@ -54,18 +53,10 @@ const TagSchema = new Schema({
 export const Tagmodel = model("Tag", TagSchema);
 
 
-
-
-
-
 const LinkSchema = new Schema({
-
     hash: String,
-
-
     userId: { type: mongoose.Types.ObjectId, ref: 'User', required: true, unique: true },
 });
-
 export const Linkmodel = model("Links", LinkSchema);
 
 
