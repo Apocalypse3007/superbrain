@@ -36,11 +36,26 @@ const ContentSchema = new Schema({
         type: String,
         required: true,
     },
+    extractedContent: {
+        type: String,
+        default: ''
+    },
+    embedding: {
+        type: [Number],
+        sparse: true,
+        index: true
+    },
+    hasEmbedding: {
+        type: Boolean,
+        default: false
+    },
     userId: { 
         type: mongoose.Types.ObjectId, 
         ref: "User", 
         required: true                      
-    },
+    }
+}, {
+    timestamps: true
 })
 export const Contentmodel = model("Content", ContentSchema);
 

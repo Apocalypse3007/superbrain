@@ -8,57 +8,65 @@ import { Sidebar } from "../components/sidebar"
 import { useContent } from "../hooks/usecontent" 
 import { BACKEND_URL } from "../config"
 import axios from "axios" 
+import { AnimatePresence, motion } from "framer-motion";
 
-// Dashboard component that renders the main page
+type Content = {
+  type: "twitter" | "youtube" | "instagram" | "link";
+  link: string;
+  title: string;
+};
 export function Dashboard() {
-  // State to manage the modal visibility
   const [modalOpen, setModalOpen] = useState(false);
-  // Custom hook to fetch content and refresh the content list
-  const {contents, refresh} = useContent();
-
-  // useEffect hook to refresh the content whenever the modalOpen state changes
+  const { contents, refresh } = useContent() as { contents: Content[]; refresh: () => void };
+  const [selectedType, setSelectedType] = useState<"twitter" | "youtube" | "instagram" | "link" | null>(null);
   useEffect(() => {
     refresh();
   }, [modalOpen])
-
+  
+  const filteredContents = contents.filter((content: Content) => {
+    if (selectedType === null) return true;
+    return content.type === selectedType;
+  })
   return (
     <div>
-      <Sidebar /> {/* Sidebar component for navigation */}
-      
+      <Sidebar selectedType={selectedType} setSelectedType={setSelectedType} />
       <div className="p-4 ml-72 min-h-screen bg-black border-2">
-        {/* CreateContentModal component for adding new content, controlled by modalOpen state */}
         <CreateContentModal open={modalOpen} onClose={() => setModalOpen(false)} />
         
         <div className="flex justify-end gap-4">
-          {/* Button to open the 'Create Content' modal */}
           <Button onClick={() => setModalOpen(true)} variant="primary" text="Add content" startIcon={<PlusIcon />} />
           
-          {/* Button to share the brain content */}
           <Button onClick={async () => {
-              // Making a POST request to share the brain content
               const response = await axios.post(`${BACKEND_URL}/brain/share`, {
                   share: true
               }, {
                   headers: {
-                      "Authorization": localStorage.getItem("token") // Passing the authorization token in the request header
+                      "Authorization": localStorage.getItem("token") 
                   }
               });
-              // Constructing the share URL and alerting the user with the link
               const shareUrl = `http://localhost:5173/share/${response.data.hash}`;
               alert(shareUrl);
           }} variant="secondary" text="Share brain" startIcon={<ShareIcon />} />
         </div>
-
-        <div className="flex gap-4 flex-wrap">
-          {contents.map(({type, link, title}) => (
-            <Card 
-                type={type} 
-                link={link} 
-                title={title} 
-            />
-          ))}
+          <br></br>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={selectedType} 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="flex gap-4 flex-wrap">
+              {filteredContents.map(({ type, link, title }) => (
+                <Card
+                  type={type}
+                  link={link}
+                  title={title}
+                />
+              ))}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
-    </div>
   );
 }

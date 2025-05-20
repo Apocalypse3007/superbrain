@@ -67,11 +67,26 @@ const ContentSchema = new mongoose_1.Schema({
         type: String,
         required: true,
     },
+    extractedContent: {
+        type: String,
+        default: ''
+    },
+    embedding: {
+        type: [Number],
+        sparse: true,
+        index: true
+    },
+    hasEmbedding: {
+        type: Boolean,
+        default: false
+    },
     userId: {
         type: mongoose_1.default.Types.ObjectId,
         ref: "User",
         required: true
-    },
+    }
+}, {
+    timestamps: true
 });
 exports.Contentmodel = (0, mongoose_1.model)("Content", ContentSchema);
 const TagSchema = new mongoose_1.Schema({

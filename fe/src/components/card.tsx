@@ -31,7 +31,8 @@ export function Card({ title, link, type }: CardProps) {
 
   return (
     <div>
-      <div className="p-4 bg-gray-900 rounded-md border-gray-600 border min-h-[5rem] w-fit min-w-[16rem] max-w-xl">
+      <div className="card-glow p-4 bg-gray-900 rounded-md border-gray-600 border min-h-[5rem] w-fit min-w-[16rem] max-w-xl">
+      <div className="relative z-10">
         <div className="flex justify-between">
           <div className="flex items-center text-md text-white truncate overflow-hidden whitespace-nowrap w-full">
             <div className="pr-2">
@@ -86,6 +87,7 @@ export function Card({ title, link, type }: CardProps) {
                 />
             </a>
             )}
+        </div>
         </div>
       </div>
     </div>
