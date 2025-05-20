@@ -17,5 +17,6 @@ exports.SigninSchema = zod_1.default.object({
 exports.ContentSchema = zod_1.default.object({
     title: zod_1.default.string().min(1),
     link: zod_1.default.string().url(),
+    type: zod_1.default.enum(["youtube", "twitter", "instagram", "link"]),
     tags: zod_1.default.array(zod_1.default.string()).min(1).optional()
 });

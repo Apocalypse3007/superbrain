@@ -32,6 +32,10 @@ const ContentSchema = new Schema({
     tags: [{
         tags: [{ type: mongoose.Types.ObjectId, ref: "tag" }],
     }],
+    type: {
+        type: String,
+        required: true,
+    },
     userId: { 
         type: mongoose.Types.ObjectId, 
         ref: "User", 

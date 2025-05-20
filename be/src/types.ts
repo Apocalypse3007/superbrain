@@ -14,6 +14,7 @@ export const SigninSchema = z.object({
 export const ContentSchema = z.object({
     title: z.string().min(1),
     link: z.string().url(),
+    type: z.enum(["youtube", "twitter", "instagram", "link"]),
     tags: z.array(z.string()).min(1).optional()
 })
 

@@ -99,6 +99,7 @@ app.post("/content", middleware_1.middleware, (req, res) => __awaiter(void 0, vo
         const contentData = {
             title: parsedData.data.title,
             link: parsedData.data.link,
+            type: parsedData.data.type,
             userId: req.userId
         };
         if (parsedData.data.tags && parsedData.data.tags.length > 0) {

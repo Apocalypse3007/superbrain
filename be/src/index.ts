@@ -90,6 +90,7 @@ app.post("/content", middleware, async (req:Request, res:Response): Promise<any>
     const contentData: any = {
       title: parsedData.data.title,
       link: parsedData.data.link,
+      type: parsedData.data.type,
       userId: req.userId
     };
 

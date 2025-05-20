@@ -63,6 +63,10 @@ const ContentSchema = new mongoose_1.Schema({
     tags: [{
             tags: [{ type: mongoose_1.default.Types.ObjectId, ref: "tag" }],
         }],
+    type: {
+        type: String,
+        required: true,
+    },
     userId: {
         type: mongoose_1.default.Types.ObjectId,
         ref: "User",
